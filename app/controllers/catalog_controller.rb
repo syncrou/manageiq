@@ -2009,7 +2009,8 @@ class CatalogController < ApplicationController
     @showtype = "config"
     identify_catalog(id)
 
-    return if record_no_longer_exists?(@record)
+    #return if record_no_longer_exists?(@record)
+    return if record_no_longer_exists?(nil)
   end
 
   def get_session_data
