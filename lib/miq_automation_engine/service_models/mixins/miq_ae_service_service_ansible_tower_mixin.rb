@@ -3,6 +3,7 @@ module MiqAeServiceServiceAnsibleTowerMixin
   included do
     expose :job_template
     expose :configuration_manager
+    expose :configuration_script
   end
 
   def job_template=(template)

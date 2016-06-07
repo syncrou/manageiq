@@ -7,5 +7,7 @@ module MiqAeMethodService
     expose :job
     expose :job_options
     expose :job_options=
+    expose :stdout
+    expose :add_custom_attributes
   end
 end

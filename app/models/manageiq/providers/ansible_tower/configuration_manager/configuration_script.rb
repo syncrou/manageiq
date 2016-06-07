@@ -7,6 +7,12 @@ class ManageIQ::Providers::AnsibleTower::ConfigurationManager::ConfigurationScri
     end
   end
 
+  def stdout
+    with_provider_object do |jt|
+      jt.last_job.result_stdout
+    end
+  end
+
   def merge_extra_vars(external)
     {:extra_vars => variables.merge(external || {}).to_json}
   end

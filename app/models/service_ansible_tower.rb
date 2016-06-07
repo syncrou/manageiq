@@ -16,6 +16,15 @@ class ServiceAnsibleTower < Service
     save_launch_options
   end
 
+  def stdout
+    item = ConfigurationScript.find(self.job_template.id)
+    item.stdout
+  end
+
+  def add_custom_attributes(name, value)
+    custom_attributes << CustomAttribute.new(:name => name, :value => value, :source => 'EVM')
+  end
+
   def job
     @job ||= service_resources.find { |sr| sr.resource.kind_of?(OrchestrationStack) }.try(:resource)
   end
