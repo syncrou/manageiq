@@ -92,8 +92,10 @@ module RelationshipMixin
 
   def relationships_of(rel_type)
     if @association_cache.include?(:all_relationships)
+      puts "Cached relationship"
       all_relationships.select { |r| r.relationship == rel_type }
     else
+      puts "Not Cached #{rel_type}"
       all_relationships.in_relationship(rel_type)
     end
   end
@@ -221,6 +223,9 @@ module RelationshipMixin
   def path_rels(*args)
     options = args.extract_options!
     rel = relationship(:raise_on_multiple => true) # TODO: Handle multiple nodes with a way to detect which node you want
+    if rel.path.map(&:resource_type).include? 'ExtManagementSystem'
+      require 'byebug'; byebug
+    end
     rels = rel.nil? ? [] : rel.path
     Relationship.filter_by_resource_type(rels, options)
   end

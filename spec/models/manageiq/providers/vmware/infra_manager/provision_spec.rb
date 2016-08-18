@@ -180,12 +180,29 @@ describe ManageIQ::Providers::Vmware::InfraManager::Provision do
           expect(@vm_prov.dest_folder).to eq(discovered_vm_folder)
         end
 
-        it "uses a nested 'Discovered virtual machine' folder in destination host" do
-          discovered_vm_folder_nested
-          @vm_prov.options[:dest_host] = [dest_host_nested.id, dest_host_nested.name]
-          parent_datacenter = dest_host_nested.parent_datacenter
-          expect(parent_datacenter.folder_path).to eq("Datacenters/nested/testing/#{parent_datacenter.name}")
-          expect(@vm_prov.dest_folder).to eq(discovered_vm_folder_nested)
+        context "nested" do
+
+          500.times do |i|
+
+            it "uses a nested 'Discovered virtual machine' folder in destination host" do
+
+                puts "Number #{i}"
+
+                discovered_vm_folder_nested
+                @vm_prov.options[:dest_host] = [dest_host_nested.id, dest_host_nested.name]
+                parent_datacenter = dest_host_nested.parent_datacenter
+                pd_folder_path = parent_datacenter.folder_path
+                if pd_folder_path =~ /^testing.+/
+                  require 'byebug'; byebug
+                  puts "Bad Path"
+                else
+                  puts "Good Path"
+                end
+                expect(pd_folder_path).to eq("Datacenters/nested/testing/#{parent_datacenter.name}")
+                #expect(parent_datacenter.folder_path).to eq("Datacenters/nested/testing/#{parent_datacenter.name}")
+                #expect(@vm_prov.dest_folder).to eq(discovered_vm_folder_nested)
+            end
+          end
         end
 
         it "uses vm folder in destination host" do
