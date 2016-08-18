@@ -18,6 +18,8 @@
             = _("Compliance Check")
           - elsif @selected_schedule.sched_action[:method] && @selected_schedule.sched_action[:method] == "db_backup"
             = _("Database Backup")
+          - elsif @selected_schedule.sched_action[:method] && @selected_schedule.sched_action[:method] == "automation_request"
+            = _("Automation Request")
           - else
             = h(ui_lookup(:model => @selected_schedule.towhat))
             = _("Analysis")
@@ -32,6 +34,9 @@
               - description = "Filter: #{search.description}"
               = search.search_type == "user" ? "My #{description}" : "Global #{description}"
 
+          - elsif @selected_schedule.filter.keys.include?(:uri_parts)
+            %p.form-control-static
+              = "#{automate_humanized_filter(@selected_schedule.filter)}"
           - else
             - if @selected_schedule.filter.kind_of?(MiqExpression)
               %p.form-control-static
