@@ -1,5 +1,5 @@
 - url = url_for(:action => 'category_field_changed', :id => "#{@category && @category.id ? @category.id : "new"}")
-#main_div
+#main_div_category_form
   %h3= _("Category Information")
   = form_tag({:action => 'category_update'},
              :id     => "category_form",

@@ -1,5 +1,5 @@
 = render :partial => "layouts/flash_msg"
-#main_div
+#main_div_rbac_tenant_details
   - type = @tenant.tenant? ? "Tenant" : "Project"
   %h3
     = _("%{type} Information") % {:type => type}

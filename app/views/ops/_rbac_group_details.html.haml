@@ -3,7 +3,7 @@
                   :id     => "#{@edit[:group_id] || "new"}")
   - combo_url = "/ops/rbac_group_field_changed/#{@edit[:group_id] || 'new'}"
 = render :partial => "layouts/flash_msg"
-#main_div
+#main_div_rbac_group_details
   %h3
     = _("Group Information")
   - if @edit

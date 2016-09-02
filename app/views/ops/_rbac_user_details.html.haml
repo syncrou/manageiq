@@ -9,7 +9,7 @@
 - observe_url_json = {:interval => '.5', :url => url}.to_json
 = render :partial => "layouts/flash_msg"
 - disabled = @edit && @edit[:new][:userid] == "admin"
-#main_div
+#main_div_rbac_user_details
   %h3
     = _("User Information")
   .form-horizontal
