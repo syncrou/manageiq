@@ -14,6 +14,7 @@ module MiqAeEngine
     FIELD_ATTRIBUTES  = %w( collect on_entry on_exit on_error max_retries max_time )
     FIELD_VALUES      = %w( value default_value )
     FIELD_ALLKEYS     = FIELD_VALUES + FIELD_ATTRIBUTES
+    CLASS_TYPES       = %w( boolean TrueClass FalseClass time Time symbol Symbol integer Fixnum float Float array String string password ).freeze
 
     BASE_NAMESPACE    = '$'
     BASE_CLASS        = 'object'
@@ -279,10 +280,13 @@ module MiqAeEngine
     end
 
     def load_array_objects_from_string(objects_str)
-      objects_str.split(',').collect do |o|
-        klass, str_value = o.split(CLASS_SEPARATOR)
-        value = MiqAeObject.convert_value_based_on_datatype(str_value, klass)
-        value if value.kind_of?(MiqAeMethodService::MiqAeServiceModelBase)
+      objects_str.split(',').collect do |element|
+        if element.include?(CLASS_SEPARATOR)
+          klass, str_value = element.split(CLASS_SEPARATOR)
+          MiqAeObject.convert_value_based_on_datatype(str_value.strip, klass.strip)
+        else
+          element.presence
+        end
       end.compact
     end
 
@@ -530,6 +534,9 @@ module MiqAeEngine
          (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
         return service_model.find(value)
       end
+
+      # CLASS_TYPES only covers basic types
+      raise MiqAeException::InvalidClass unless CLASS_TYPES.include?(datatype)
 
       # default datatype => 'string'
       value
