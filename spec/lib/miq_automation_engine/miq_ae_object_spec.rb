@@ -81,13 +81,6 @@ describe MiqAeEngine::MiqAeObject do
     expect(result["vms"].length).to eq(2)
   end
 
-  it "#process_args_as_attributes with an array containing invalid entries" do
-    vm2 = FactoryGirl.create(:vm_vmware)
-    result = @miq_obj.process_args_as_attributes({"Array::vms" => "VmOrTemplate::#{@vm.id},fred::12,,VmOrTemplate::#{vm2.id}"})
-    expect(result["vms"]).to be_kind_of(Array)
-    expect(result["vms"].length).to eq(2)
-  end
-
   it "#process_args_as_attributes with an array containing disparate objects" do
     host    = FactoryGirl.create(:host)
     ems     = FactoryGirl.create(:ems_vmware)
@@ -103,6 +96,55 @@ describe MiqAeEngine::MiqAeObject do
     klass.update_attributes!(:inherits => '/LUIGI/A/C/missing')
     workspace = MiqAeEngine.instantiate("/A/C/CLASS1/FRED", @user)
     expect(workspace.root).not_to be_nil
+  end
+
+  describe "#process_args_as_attributes" do
+    let(:result) { @miq_obj.process_args_as_attributes("Array::my_values" => my_values) }
+
+    context "with an array containing strings" do
+      let(:my_values) { "abc,xyz,,1" }
+
+      it "stores the values as an array of strings" do
+        expect(result["my_values"]).to eq(%w(abc xyz 1))
+      end
+    end
+
+    context "with an array containing invalid data types" do
+      let(:vm2) { FactoryGirl.create(:vm_vmware) }
+      let(:my_values) { "VmOrTemplate::#{@vm.id},fred::12,,VmOrTemplate::#{vm2.id}" }
+
+      it "raises an exception" do
+        expect { @miq_obj.process_args_as_attributes("Array::vms" => my_values) }.to raise_exception MiqAeException::InvalidClass
+      end
+    end
+
+    context "with an array including spaces after the commas" do
+      let(:my_values) { "integer::1, integer::3, integer::10" }
+
+      it "stores the values as an array of strings" do
+        expect(result["my_values"]).to eq([1, 3, 10])
+      end
+    end
+
+    context "with an array including no spaces after the commas" do
+      let(:my_values) { "integer::1,integer::3,integer::10" }
+
+      it "stores the values as an array of strings" do
+        expect(result["my_values"]).to eq([1, 3, 10])
+      end
+    end
+
+    context "with an array containing strings and objects" do
+      let(:my_values) { "abc,VmOrTemplate::#{@vm.id}" }
+
+      it "stores the first value as a string" do
+        expect(result["my_values"].first).to eq("abc")
+      end
+
+      it "stores the second value as an MiqAeMethodService::MiqAeServiceVmOrTemplate" do
+        expect(result["my_values"].second).to be_kind_of(MiqAeMethodService::MiqAeServiceVmOrTemplate)
+      end
+    end
   end
 
   context "#enforce_state_maxima" do
