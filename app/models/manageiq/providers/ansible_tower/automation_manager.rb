@@ -28,6 +28,7 @@ class ManageIQ::Providers::AnsibleTower::AutomationManager < ManageIQ::Providers
     "ansible_tower_automation"
   end
 
+
   private
 
   def connection_source(options = {})

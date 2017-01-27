@@ -51,16 +51,19 @@ class ServiceTemplateAnsiblePlaybook < ServiceTemplateGeneric
   private_class_method :prepare_job_template_and_dialog
 
   def self.create_job_template(name, description, info)
-    playbook = ManageIQ::Providers::AnsibleTower::ConfigurationManager::Playbook.find(info[:playbook_id])
-    # tower = playbook.manager
+    playbook = ManageIQ::Providers::AnsibleTower::AutomationManager::Playbook.find(info[:playbook_id])
+    tower = playbook.manager
 
-    # params = {
-    #   :name         => name,
-    #   :description  => description || '',
-    #   :extra_vars   => info[:variables] || {},
-    #   :inventory_id => playbook.inventory_root_group,
-    # }
-    # tower.class.create_in_provider(tower, params)
+    params = {
+      :name         => name,
+      :description  => description || '',
+      :extra_vars   => info[:variables] || {},
+      :project      => playbook.configuration_script_source.manager_ref,
+      :inventory_id => playbook.inventory_root_group,
+    }
+
+    task_id = tower.class.create_in_provider_queue(tower.id, params)
+    MiqTask.wait_for_taskid(:task_id => task_id)
   end
   private_class_method :create_job_template
 
