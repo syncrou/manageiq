@@ -96,14 +96,7 @@ class Service < ApplicationRecord
   end
 
   def power_state
-    if options[:power_status] == "starting"
-      return 'on'  if power_states_match?(:start)
-    elsif options[:power_status] == "stopping"
-      return 'off' if power_states_match?(:stop)
-    else
-      return 'on'  if power_states_match?(:start)
-      return 'off' if power_states_match?(:stop)
-    end
+    PowerState.current(options, self)
   end
 
   def power_status
@@ -180,10 +173,11 @@ class Service < ApplicationRecord
     queue_group_action(:shutdown_guest, last_index, -1, delay_for_action(last_index, :stop))
   end
 
-  def power_states_match?(action)
-    if composite? && (power_states.uniq == map_composite_power_states(action))
+  def power_states_match?(action, states = nil)
+    states = power_states if states.nil?
+    if composite? && (states.uniq == map_composite_power_states(action))
       return update_power_status(action)
-    elsif atomic? && (power_states[0] == POWER_STATE_MAP[action])
+    elsif atomic? && (states[0] == POWER_STATE_MAP[action])
       return update_power_status(action)
     end
     false
