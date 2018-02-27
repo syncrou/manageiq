@@ -1,0 +1,14 @@
+---
+postgres:
+  image:  postgres:9.5
+  ports: 
+    - "5432:5432"
+  environment:
+    POSTGRES_PASSWORD: buttons
+    POSTGRES_USER: root
+  volumes:
+    - /tmp:/tmp_host
+    - /Users/dbomhof/syncrou/docker_volumes/postgresql/:/var/lib/postgresql/data
+
+memcached:
+  image: memcached:latest
