@@ -11,4 +11,4 @@ postgres:
     - /Users/dbomhof/syncrou/docker_volumes/postgresql/:/var/lib/postgresql/data
 
 memcached:
-  image: memcached:latest
+  image: memcached:alpine
