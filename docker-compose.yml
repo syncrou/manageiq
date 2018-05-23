@@ -12,3 +12,5 @@ postgres:
 
 memcached:
   image: memcached:alpine
+  ports:
+    - "11211:11211"
